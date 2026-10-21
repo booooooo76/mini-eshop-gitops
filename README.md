@@ -9,9 +9,9 @@ Argo CD watches this repository and keeps the cluster in sync with it.
 |---|---|
 | `bootstrap/root.yaml` | Root Application (App of Apps). The only object applied by hand |
 | `argocd-apps/` | Child Applications. The root Application syncs everything in this folder |
-| `argocd-apps/mini-eshop.yaml` | Application for the chart: namespace `eshop-gitops`, automated sync with prune |
-| `charts/mini-eshop/` | Helm chart of the application (copied from `mini-eshop/helm/mini-eshop`, version 0.2.0) |
-| `charts/mini-eshop/values-minikube.yaml` | Values for the minikube cluster: image tag, replicas, feature switches |
+| `argocd-apps/mini-eshop.yaml` | Application for the chart: namespace `eshop-gitops`, automated sync with prune and selfHeal |
+| `charts/mini-eshop/` | Helm chart of the application (copied from `mini-eshop/helm/mini-eshop`, version 0.3.0) |
+| `charts/mini-eshop/values-minikube.yaml` | Values for the minikube cluster: image tag, replicas, rollout deadline, feature switches |
 
 ## Bootstrap
 
@@ -44,6 +44,7 @@ The services build their connection strings from `POSTGRES_USER` and `POSTGRES_P
 
 - `secrets.existingSecret`: use a Secret created outside the chart instead of `--set secrets.postgresPassword=...`.
 - The Secret holds only the user and password; connection strings are assembled in the Deployments.
+- `app.progressDeadlineSeconds` (default 600, minikube 60): how long a rollout may take before Kubernetes reports `ProgressDeadlineExceeded` and Argo CD shows the app as Degraded.
 - `values-minikube.yaml` disables the `pre-upgrade` hook and the `helm test` pod. Argo CD runs
   `pre-upgrade` hooks as PreSync before every sync, including the first one, when PostgreSQL
   does not exist yet, and it does not run `helm test` at all.
@@ -54,3 +55,9 @@ The services build their connection strings from `POSTGRES_USER` and `POSTGRES_P
 helm lint charts/mini-eshop -f charts/mini-eshop/values-minikube.yaml
 helm template mini-eshop charts/mini-eshop -n eshop-gitops -f charts/mini-eshop/values-minikube.yaml
 ```
+
+## Day-to-day changes
+
+- Release: change `image.tag` in `values-minikube.yaml`, commit, push. Argo CD polls Git every ~3 minutes; `argocd app get mini-eshop --refresh` checks at once.
+- Roll back: `git revert <commit>` and push. Argo CD's own Rollback is disabled while automated sync is on, so Git stays the source of truth.
+- Manual changes in the cluster (`kubectl scale`, `kubectl edit`) are reverted by selfHeal within seconds.
