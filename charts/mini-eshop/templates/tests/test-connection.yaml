@@ -1,0 +1,39 @@
+{{- if .Values.tests.enabled }}
+{{- $fullname := include "mini-eshop.fullname" . }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ $fullname }}-test-connection
+  labels:
+    {{- include "mini-eshop.labels" . | nindent 4 }}
+    app.kubernetes.io/component: test
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: test
+      image: {{ printf "%s:%s" .Values.waitForDeps.image.repository .Values.waitForDeps.image.tag | quote }}
+      resources:
+        {{- toYaml .Values.waitForDeps.resources | nindent 8 }}
+      command:
+        - sh
+        - -c
+        - |
+          base=http://{{ $fullname }}-gateway:{{ .Values.app.service.port }}
+          check() {
+            out=$(wget -qO- -T 5 "$1") || { echo "FAIL $1 (no response)"; exit 1; }
+            case "$out" in
+              *"$2"*) echo "OK   $1 -> $out" ;;
+              *) echo "FAIL $1 -> $out (expected $2)"; exit 1 ;;
+            esac
+          }
+          check "$base/info" '"version":"{{ default .Chart.AppVersion .Values.image.tag }}"'
+          check "$base/info" '"service":"gateway"'
+          check "$base/catalog/info" '"service":"catalog-api"'
+          check "$base/orders/info" '"service":"orders-api"'
+          check "$base/notifications/info" '"service":"notifications-api"'
+          check "$base/reviews/info" '"service":"reviews-api"'
+          echo "all checks passed"
+{{- end }}

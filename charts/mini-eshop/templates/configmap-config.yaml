@@ -1,0 +1,12 @@
+{{- $fullname := include "mini-eshop.fullname" . }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-config
+  labels:
+    {{- include "mini-eshop.labels" . | nindent 4 }}
+data:
+  ASPNETCORE_ENVIRONMENT: {{ .Values.config.environment | quote }}
+  Logging__LogLevel__Default: {{ .Values.config.logLevel | quote }}
+  RabbitMQ__Host: {{ printf "%s-rabbitmq" $fullname | quote }}
+  Redis__Connection: {{ printf "%s-redis:6379" $fullname | quote }}

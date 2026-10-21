@@ -1,0 +1,28 @@
+{{- $fullname := include "mini-eshop.fullname" . -}}
+mini-eshop {{ default .Chart.AppVersion .Values.image.tag }} is deployed: release "{{ .Release.Name }}", namespace "{{ .Release.Namespace }}".
+
+1. Wait until all pods are Ready (the services wait for PostgreSQL and RabbitMQ first, about 1-2 minutes):
+
+   kubectl get pods -n {{ .Release.Namespace }} -w
+
+{{- if .Values.ingress.enabled }}
+
+2. Open the application through the Ingress. Keep this command running in a separate terminal:
+
+   minikube tunnel
+
+   Then open: http://{{ default "127.0.0.1" .Values.ingress.host }}/info
+{{- else }}
+
+2. Ingress is disabled for this release. Reach the application with port-forward (keep it running):
+
+   kubectl port-forward -n {{ .Release.Namespace }} svc/{{ $fullname }}-gateway 8080:{{ .Values.app.service.port }}
+
+   Then open: http://localhost:8080/info
+{{- end }}
+
+3. Useful paths: /info (version and pod name), /catalog/api/products, /orders/api/orders{{ if eq .Values.config.environment "Development" }}, /swagger{{ end }}
+
+Remove everything this release created:
+
+   helm uninstall {{ .Release.Name }} -n {{ .Release.Namespace }}

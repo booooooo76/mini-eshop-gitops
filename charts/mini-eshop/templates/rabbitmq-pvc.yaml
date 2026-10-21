@@ -1,0 +1,19 @@
+{{- if .Values.rabbitmq.persistence.enabled }}
+{{- $fullname := include "mini-eshop.fullname" . }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $fullname }}-rabbitmq-data
+  labels:
+    {{- include "mini-eshop.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- with .Values.rabbitmq.persistence.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.rabbitmq.persistence.size }}
+{{- end }}

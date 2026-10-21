@@ -1,0 +1,17 @@
+{{- $fullname := include "mini-eshop.fullname" . }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullname }}-notifications-api
+  labels:
+    {{- include "mini-eshop.labels" . | nindent 4 }}
+    app.kubernetes.io/component: notifications-api
+spec:
+  type: {{ .Values.app.service.type }}
+  selector:
+    {{- include "mini-eshop.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: notifications-api
+  ports:
+    - name: http
+      port: {{ .Values.app.service.port }}
+      targetPort: http

@@ -1,0 +1,22 @@
+image:
+  tag: "1.1.0"
+
+config:
+  environment: Development
+  logLevel: Information
+
+app:
+  replicas: 1
+
+secrets:
+  existingSecret: mini-eshop-db
+
+ingress:
+  enabled: false
+
+hooks:
+  preUpgradeCheck:
+    enabled: false
+
+tests:
+  enabled: false

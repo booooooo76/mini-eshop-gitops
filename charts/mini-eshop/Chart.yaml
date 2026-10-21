@@ -1,0 +1,9 @@
+apiVersion: v2
+name: mini-eshop
+description: Helm chart for the mini-eshop microservices (Catalog, Orders, Notifications, Reviews, Gateway) with PostgreSQL, RabbitMQ and Redis
+type: application
+version: 0.2.0
+appVersion: "1.1.0"
+home: https://github.com/booooooo76/mini-eshop
+sources:
+  - https://github.com/booooooo76/mini-eshop

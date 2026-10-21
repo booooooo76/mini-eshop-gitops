@@ -1,0 +1,10 @@
+{{- $fullname := include "mini-eshop.fullname" . }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-postgres-init
+  labels:
+    {{- include "mini-eshop.labels" . | nindent 4 }}
+data:
+  init-multiple-dbs.sh: |
+    {{- .Files.Get "files/init-multiple-dbs.sh" | nindent 4 }}

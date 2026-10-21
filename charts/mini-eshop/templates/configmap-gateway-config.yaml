@@ -1,0 +1,17 @@
+{{- $fullname := include "mini-eshop.fullname" . }}
+{{- $port := .Values.app.service.port }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-gateway-config
+  labels:
+    {{- include "mini-eshop.labels" . | nindent 4 }}
+data:
+  SwaggerAggregator__Endpoints__0__Url: /catalog/openapi/v1.json
+  SwaggerAggregator__Endpoints__1__Url: /orders/openapi/v1.json
+  SwaggerAggregator__Endpoints__2__Url: /notifications/openapi/v1.json
+  SwaggerAggregator__Endpoints__3__Url: /reviews/openapi/v1.json
+  ReverseProxy__Clusters__catalog-cluster__Destinations__destination1__Address: {{ printf "http://%s-catalog-api:%v" $fullname $port | quote }}
+  ReverseProxy__Clusters__orders-cluster__Destinations__destination1__Address: {{ printf "http://%s-orders-api:%v" $fullname $port | quote }}
+  ReverseProxy__Clusters__notifications-cluster__Destinations__destination1__Address: {{ printf "http://%s-notifications-api:%v" $fullname $port | quote }}
+  ReverseProxy__Clusters__reviews-cluster__Destinations__destination1__Address: {{ printf "http://%s-reviews-api:%v" $fullname $port | quote }}
