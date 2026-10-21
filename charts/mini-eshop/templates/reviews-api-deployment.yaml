@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/component: reviews-api
 spec:
   replicas: {{ .Values.app.replicas }}
+  progressDeadlineSeconds: {{ .Values.app.progressDeadlineSeconds }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

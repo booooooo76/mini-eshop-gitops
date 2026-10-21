@@ -28,6 +28,7 @@ app:
     type: ClusterIP
     port: 8080
   preStopSleepSeconds: 10
+  progressDeadlineSeconds: 600
 
 waitForDeps:
   image:

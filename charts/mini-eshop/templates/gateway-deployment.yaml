@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/component: gateway
 spec:
   replicas: {{ .Values.app.replicas }}
+  progressDeadlineSeconds: {{ .Values.app.progressDeadlineSeconds }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
