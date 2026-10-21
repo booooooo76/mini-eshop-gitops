@@ -7,8 +7,23 @@ Argo CD watches this repository and keeps the cluster in sync with it.
 
 | Path | Contents |
 |---|---|
+| `bootstrap/root.yaml` | Root Application (App of Apps). The only object applied by hand |
+| `argocd-apps/` | Child Applications. The root Application syncs everything in this folder |
+| `argocd-apps/mini-eshop.yaml` | Application for the chart: namespace `eshop-gitops`, automated sync with prune |
 | `charts/mini-eshop/` | Helm chart of the application (copied from `mini-eshop/helm/mini-eshop`, version 0.2.0) |
 | `charts/mini-eshop/values-minikube.yaml` | Values for the minikube cluster: image tag, replicas, feature switches |
+
+## Bootstrap
+
+1. Create the namespace and the database Secret (see [Secrets](#secrets)).
+2. Apply the root Application once:
+
+   ```bash
+   kubectl apply -f bootstrap/root.yaml
+   ```
+
+Argo CD then reads `argocd-apps/`, creates the `mini-eshop` Application and deploys the chart.
+Every later change goes through a commit to `main`.
 
 ## Secrets
 
