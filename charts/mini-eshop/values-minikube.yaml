@@ -6,7 +6,7 @@ config:
   logLevel: Information
 
 app:
-  replicas: 1
+  replicas: 2
   progressDeadlineSeconds: 60
 
 secrets:
