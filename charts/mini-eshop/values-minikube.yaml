@@ -12,6 +12,11 @@ app:
 secrets:
   existingSecret: mini-eshop-db
 
+rabbitmq:
+  resources:
+    limits:
+      cpu: "2"
+
 ingress:
   enabled: false
 
