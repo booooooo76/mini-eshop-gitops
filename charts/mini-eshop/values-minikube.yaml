@@ -6,8 +6,20 @@ config:
   logLevel: Information
 
 app:
-  replicas: 2
+  replicas: 5
   progressDeadlineSeconds: 60
+
+rollout:
+  enabled: true
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: {}
+        - setWeight: 60
+        - pause: {duration: 30s}
+        - setWeight: 80
+        - pause: {duration: 30s}
 
 secrets:
   existingSecret: mini-eshop-db
