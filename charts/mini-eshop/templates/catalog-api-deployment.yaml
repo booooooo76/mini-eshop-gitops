@@ -1,6 +1,5 @@
 {{- $fullname := include "mini-eshop.fullname" . }}
-apiVersion: apps/v1
-kind: Deployment
+{{ include "mini-eshop.workloadKind" . }}
 metadata:
   name: {{ $fullname }}-catalog-api
   labels:
@@ -9,11 +8,7 @@ metadata:
 spec:
   replicas: {{ .Values.app.replicas }}
   progressDeadlineSeconds: {{ .Values.app.progressDeadlineSeconds }}
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+  {{- include "mini-eshop.workloadStrategy" . | nindent 2 }}
   selector:
     matchLabels:
       {{- include "mini-eshop.selectorLabels" . | nindent 6 }}

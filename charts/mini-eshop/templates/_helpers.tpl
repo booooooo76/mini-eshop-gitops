@@ -74,3 +74,30 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 - name: ConnectionStrings__{{ .name }}
   value: {{ printf "Host=%s-postgres;Port=5432;Database=%s;Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)" (include "mini-eshop.fullname" .root) .database | quote }}
 {{- end }}
+
+{{- define "mini-eshop.workloadKind" -}}
+{{- if .Values.rollout.enabled -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+{{- else -}}
+apiVersion: apps/v1
+kind: Deployment
+{{- end }}
+{{- end }}
+
+{{- define "mini-eshop.workloadStrategy" -}}
+{{- if .Values.rollout.enabled -}}
+{{- if not .Values.rollout.strategy }}
+{{- fail "rollout.strategy is required when rollout.enabled is true" }}
+{{- end -}}
+revisionHistoryLimit: 3
+strategy:
+  {{- toYaml .Values.rollout.strategy | nindent 2 }}
+{{- else -}}
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+{{- end }}
+{{- end }}

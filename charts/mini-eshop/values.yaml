@@ -30,6 +30,10 @@ app:
   preStopSleepSeconds: 10
   progressDeadlineSeconds: 600
 
+rollout:
+  enabled: false
+  strategy: {}
+
 waitForDeps:
   image:
     repository: busybox
