@@ -9,8 +9,9 @@ Argo CD watches this repository and keeps the cluster in sync with it.
 |---|---|
 | `bootstrap/root.yaml` | Root Application (App of Apps). The only object applied by hand |
 | `argocd-apps/` | Child Applications. The root Application syncs everything in this folder |
+| `argocd-apps/argo-rollouts.yaml` | Argo Rollouts controller (Helm chart `argo-rollouts` 2.43.8), sync-wave -1, no finalizer so its CRDs survive |
 | `argocd-apps/mini-eshop.yaml` | Application for the chart: namespace `eshop-gitops`, automated sync with prune and selfHeal |
-| `charts/mini-eshop/` | Helm chart of the application (copied from `mini-eshop/helm/mini-eshop`, version 0.3.0) |
+| `charts/mini-eshop/` | Helm chart of the application (copied from `mini-eshop/helm/mini-eshop`, version 0.4.0) |
 | `charts/mini-eshop/values-minikube.yaml` | Values for the minikube cluster: image tag, replicas, rollout deadline, feature switches |
 
 ## Bootstrap
@@ -61,3 +62,15 @@ helm template mini-eshop charts/mini-eshop -n eshop-gitops -f charts/mini-eshop/
 - Release: change `image.tag` in `values-minikube.yaml`, commit, push. Argo CD polls Git every ~3 minutes; `argocd app get mini-eshop --refresh` checks at once.
 - Roll back: `git revert <commit>` and push. Argo CD's own Rollback is disabled while automated sync is on, so Git stays the source of truth.
 - Manual changes in the cluster (`kubectl scale`, `kubectl edit`) are reverted by selfHeal within seconds.
+
+## Progressive delivery (Argo Rollouts)
+
+With `rollout.enabled: true` the five app services render as Argo `Rollout` objects instead of Deployments
+(helpers `mini-eshop.workloadKind` and `mini-eshop.workloadStrategy`). `values-minikube.yaml` uses a canary:
+20% of the 5 replicas, pause until promoted, then 60% and 80% with 30 s pauses.
+
+- Release: change `image.tag`, commit, push, `argocd app get mini-eshop --refresh`; the Rollouts pause at 20%
+  (Argo CD health: Suspended). Continue with `kubectl argo rollouts promote <rollout> -n eshop-gitops`.
+- Cancel: `kubectl argo rollouts abort <rollout> -n eshop-gitops` (Synced + Degraded), then `git revert` the release commit.
+- Check the split from inside the cluster, one request per connection:
+  `kubectl -n eshop-gitops run curl --rm -it --image=curlimages/curl:8.11.1 -- sh -c 'while true; do curl -s http://mini-eshop-gateway:8080/version; echo; sleep 0.5; done'`
