@@ -8,7 +8,6 @@ config:
 app:
   replicas: 3
   progressDeadlineSeconds: 60
-  failRate: "0.3"
 
 metrics:
   serviceMonitor:
