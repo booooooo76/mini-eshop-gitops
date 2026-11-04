@@ -46,6 +46,10 @@ spec:
         grafana:
           testFramework:
             enabled: false
+          grafana.ini:
+            auth.anonymous:
+              enabled: true
+              org_role: Editor
           admin:
             existingSecret: grafana-admin
             userKey: admin-user
