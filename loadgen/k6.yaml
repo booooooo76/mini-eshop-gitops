@@ -14,7 +14,7 @@ data:
     import { sleep } from 'k6';
 
     export const options = {
-      vus: Number(__ENV.VUS || 5),
+      vus: Number(__ENV.VUS || 3),
       duration: '12h',
       noConnectionReuse: true,
       summaryTrendStats: ['avg', 'p(95)'],
@@ -58,7 +58,7 @@ spec:
           args: ["run", "--quiet", "/scripts/script.js"]
           env:
             - name: VUS
-              value: "5"
+              value: "3"
           resources:
             requests:
               cpu: 100m
