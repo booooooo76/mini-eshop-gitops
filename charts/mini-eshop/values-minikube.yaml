@@ -6,7 +6,7 @@ config:
   logLevel: Information
 
 app:
-  replicas: 5
+  replicas: 3
   progressDeadlineSeconds: 60
 
 rollout:
