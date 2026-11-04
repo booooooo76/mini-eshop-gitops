@@ -12,6 +12,8 @@ app:
 metrics:
   serviceMonitor:
     enabled: true
+  dashboard:
+    enabled: true
 
 rollout:
   enabled: true
