@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: loadgen
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k6-script
+  namespace: loadgen
+data:
+  script.js: |
+    import http from 'k6/http';
+    import { sleep } from 'k6';
+
+    export const options = {
+      vus: Number(__ENV.VUS || 5),
+      duration: '12h',
+      noConnectionReuse: true,
+      summaryTrendStats: ['avg', 'p(95)'],
+    };
+
+    const base = 'http://mini-eshop-gateway.eshop-gitops:8080';
+    const paths = [
+      '/catalog/api/products',
+      '/catalog/api/products/11111111-1111-1111-1111-111111111111',
+      '/orders/api/orders',
+      '/notifications/api/notifications',
+      '/reviews/api/reviews',
+      '/reviews/api/reviews/product/11111111-1111-1111-1111-111111111111/summary',
+    ];
+
+    export default function () {
+      for (const path of paths) {
+        http.get(base + path);
+      }
+      sleep(0.2);
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k6
+  namespace: loadgen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k6
+  template:
+    metadata:
+      labels:
+        app: k6
+    spec:
+      containers:
+        - name: k6
+          image: grafana/k6:1.8.2
+          args: ["run", "--quiet", "/scripts/script.js"]
+          env:
+            - name: VUS
+              value: "5"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
+          volumeMounts:
+            - name: script
+              mountPath: /scripts
+      volumes:
+        - name: script
+          configMap:
+            name: k6-script
