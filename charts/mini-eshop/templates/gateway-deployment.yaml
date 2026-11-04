@@ -34,6 +34,9 @@ spec:
                 name: {{ $fullname }}-config
             - configMapRef:
                 name: {{ $fullname }}-gateway-config
+          env:
+            - name: FAIL_RATE
+              value: {{ .Values.app.failRate | quote }}
           resources:
             {{- toYaml .Values.app.resources | nindent 12 }}
           lifecycle:

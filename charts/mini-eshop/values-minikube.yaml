@@ -1,5 +1,5 @@
 image:
-  tag: "1.5.0"
+  tag: "1.7.0"
 
 config:
   environment: Development
@@ -8,6 +8,10 @@ config:
 app:
   replicas: 3
   progressDeadlineSeconds: 60
+
+metrics:
+  serviceMonitor:
+    enabled: true
 
 rollout:
   enabled: true

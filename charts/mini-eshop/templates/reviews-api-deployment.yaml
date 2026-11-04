@@ -36,6 +36,8 @@ spec:
                 name: {{ $fullname }}-config
           env:
             {{- include "mini-eshop.dbEnv" (dict "root" . "name" "Reviews" "database" "reviews_db") | nindent 12 }}
+            - name: FAIL_RATE
+              value: {{ .Values.app.failRate | quote }}
           resources:
             {{- toYaml .Values.app.resources | nindent 12 }}
           lifecycle:

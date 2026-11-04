@@ -29,6 +29,12 @@ app:
     port: 8080
   preStopSleepSeconds: 10
   progressDeadlineSeconds: 600
+  failRate: "0"
+
+metrics:
+  serviceMonitor:
+    enabled: false
+    interval: 15s
 
 rollout:
   enabled: false

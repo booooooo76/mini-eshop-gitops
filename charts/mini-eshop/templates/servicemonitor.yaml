@@ -1,0 +1,22 @@
+{{- if .Values.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "mini-eshop.fullname" . }}
+  labels:
+    {{- include "mini-eshop.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "mini-eshop.selectorLabels" . | nindent 6 }}
+    matchExpressions:
+      - key: app.kubernetes.io/component
+        operator: In
+        values: [gateway, catalog-api, orders-api, notifications-api, reviews-api]
+  podTargetLabels:
+    - rollouts-pod-template-hash
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: {{ .Values.metrics.serviceMonitor.interval }}
+{{- end }}
