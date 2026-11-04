@@ -118,12 +118,12 @@
             "lineWidth": 2,
             "fillOpacity": 10,
             "showPoints": "never",
+            "axisSoftMax": 0.1,
             "thresholdsStyle": {
               "mode": "line"
             }
           },
           "min": 0,
-          "softMax": 0.1,
           "thresholds": {
             "mode": "absolute",
             "steps": [
