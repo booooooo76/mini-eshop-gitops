@@ -17,11 +17,24 @@ metrics:
 
 rollout:
   enabled: true
+  analysis:
+    enabled: true
   strategy:
     canary:
       steps:
         - setWeight: 20
-        - pause: {}
+        - pause: {duration: 30s}
+        - analysis:
+            templates:
+              - templateName: mini-eshop-success-rate
+            args:
+              - name: service
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+              - name: canary-hash
+                valueFrom:
+                  podTemplateHashValue: Latest
         - setWeight: 60
         - pause: {duration: 30s}
         - setWeight: 80

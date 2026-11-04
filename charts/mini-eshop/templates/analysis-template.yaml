@@ -1,0 +1,26 @@
+{{- if and .Values.rollout.enabled .Values.rollout.analysis.enabled }}
+{{- $selector := `service="{{args.service}}", rollouts_pod_template_hash="{{args.canary-hash}}", route!="/health"` }}
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: {{ include "mini-eshop.fullname" . }}-success-rate
+  labels:
+    {{- include "mini-eshop.labels" . | nindent 4 }}
+spec:
+  args:
+    - name: service
+    - name: canary-hash
+  metrics:
+    - name: success-rate
+      interval: {{ .Values.rollout.analysis.interval }}
+      count: {{ .Values.rollout.analysis.count }}
+      failureLimit: {{ .Values.rollout.analysis.failureLimit }}
+      successCondition: {{ printf "result[0] >= %v" .Values.rollout.analysis.successRate | quote }}
+      provider:
+        prometheus:
+          address: {{ .Values.rollout.analysis.prometheusAddress }}
+          query: |
+            sum(rate(http_requests_total{ {{- $selector }}, status!~"5.."}[1m]))
+            /
+            sum(rate(http_requests_total{ {{- $selector }}}[1m]))
+{{- end }}

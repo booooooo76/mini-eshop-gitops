@@ -41,6 +41,13 @@ metrics:
 rollout:
   enabled: false
   strategy: {}
+  analysis:
+    enabled: false
+    prometheusAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+    successRate: 0.95
+    interval: 15s
+    count: 4
+    failureLimit: 1
 
 waitForDeps:
   image:
