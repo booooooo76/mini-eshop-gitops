@@ -37,6 +37,10 @@ metrics:
     interval: 15s
   dashboard:
     enabled: false
+  prometheusRule:
+    enabled: false
+    errorRateThreshold: 0.05
+    for: 30s
 
 rollout:
   enabled: false

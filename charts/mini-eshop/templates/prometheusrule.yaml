@@ -1,0 +1,25 @@
+{{- if .Values.metrics.prometheusRule.enabled }}
+{{- $selector := printf "namespace=%q, route!=\"/health\"" .Release.Namespace }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "mini-eshop.fullname" . }}
+  labels:
+    {{- include "mini-eshop.labels" . | nindent 4 }}
+spec:
+  groups:
+    - name: mini-eshop.rules
+      rules:
+        - alert: MiniEshopHighErrorRate
+          expr: |
+            sum by (service) (rate(http_requests_total{ {{- $selector }}, status=~"5.."}[1m]))
+            /
+            sum by (service) (rate(http_requests_total{ {{- $selector }}}[1m]))
+            > {{ .Values.metrics.prometheusRule.errorRateThreshold }}
+          for: {{ .Values.metrics.prometheusRule.for }}
+          labels:
+            severity: warning
+          annotations:
+            summary: {{ `"{{ $labels.service }}: 5xx {{ $value | humanizePercentage }}"` }}
+            description: {{ printf "Share of 5xx responses of {{ $labels.service }} has been above %v for %s." .Values.metrics.prometheusRule.errorRateThreshold .Values.metrics.prometheusRule.for | quote }}
+{{- end }}
