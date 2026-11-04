@@ -18,7 +18,7 @@
     "list": [
       {
         "name": "service",
-        "label": "РЎРµСЂРІС–СЃ",
+        "label": "Сервіс",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -49,7 +49,7 @@
     {
       "id": 1,
       "type": "timeseries",
-      "title": "Р—Р°РїРёС‚Рё Р·Р° СЃРµРєСѓРЅРґСѓ",
+      "title": "Запити за секунду",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -100,7 +100,7 @@
     {
       "id": 2,
       "type": "timeseries",
-      "title": "Р§Р°СЃС‚РєР° РїРѕРјРёР»РѕРє 5xx",
+      "title": "Частка помилок 5xx",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -169,7 +169,7 @@
     {
       "id": 3,
       "type": "timeseries",
-      "title": "Р—Р°С‚СЂРёРјРєР° p95",
+      "title": "Затримка p95",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -220,7 +220,7 @@
     {
       "id": 4,
       "type": "timeseries",
-      "title": "Р—Р°РїРёС‚Рё Р·Р° РІРµСЂСЃС–С”СЋ РїРѕРґС–РІ (rollouts-pod-template-hash)",
+      "title": "Запити за версією подів (rollouts-pod-template-hash)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -271,7 +271,7 @@
     {
       "id": 5,
       "type": "timeseries",
-      "title": "CPU РїРѕРґС–РІ",
+      "title": "CPU подів",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -322,7 +322,7 @@
     {
       "id": 6,
       "type": "timeseries",
-      "title": "РџР°Рј'СЏС‚СЊ РїРѕРґС–РІ (working set)",
+      "title": "Пам'ять подів (working set)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -373,7 +373,7 @@
     {
       "id": 7,
       "type": "logs",
-      "title": "Р›РѕРіРё Р·Р°СЃС‚РѕСЃСѓРЅРєСѓ (Loki): warn С– error",
+      "title": "Логи застосунку (Loki): warn і error",
       "datasource": {
         "type": "loki",
         "uid": "loki"
