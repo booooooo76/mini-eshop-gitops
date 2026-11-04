@@ -101,3 +101,8 @@ strategy:
     maxUnavailable: 0
 {{- end }}
 {{- end }}
+
+{{- define "mini-eshop.dataChecksum" -}}
+{{- $object := include (print .root.Template.BasePath "/" .file) .root | fromYaml -}}
+{{- toYaml (dict "data" $object.data "stringData" $object.stringData) | sha256sum -}}
+{{- end }}

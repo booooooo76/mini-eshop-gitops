@@ -19,8 +19,8 @@ spec:
         {{- include "mini-eshop.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: notifications-api
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap-config.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        checksum/config: {{ include "mini-eshop.dataChecksum" (dict "root" . "file" "configmap-config.yaml") }}
+        checksum/secret: {{ include "mini-eshop.dataChecksum" (dict "root" . "file" "secret.yaml") }}
     spec:
       initContainers:
         {{- include "mini-eshop.waitForDeps" (dict "root" . "targets" (list "postgres:5432" "rabbitmq:5672")) | nindent 8 }}

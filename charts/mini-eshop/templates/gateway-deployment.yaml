@@ -19,8 +19,8 @@ spec:
         {{- include "mini-eshop.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: gateway
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap-config.yaml") . | sha256sum }}
-        checksum/gateway-config: {{ include (print $.Template.BasePath "/configmap-gateway-config.yaml") . | sha256sum }}
+        checksum/config: {{ include "mini-eshop.dataChecksum" (dict "root" . "file" "configmap-config.yaml") }}
+        checksum/gateway-config: {{ include "mini-eshop.dataChecksum" (dict "root" . "file" "configmap-gateway-config.yaml") }}
     spec:
       containers:
         - name: gateway
